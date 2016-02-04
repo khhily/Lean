@@ -1,0 +1,29 @@
+﻿@model object
+@using System.Collections
+@using System.Linq.Expressions
+
+@{
+    this.Layout = null;
+    string propertyExpression = ViewBag.PropertyName;
+    string containerClass = ViewBag.ContainerClass;
+    string labelWidth = ViewBag.LabelWidth ?? "";
+    if (!string.IsNullOrEmpty(labelWidth) && !labelWidth.Trim().EndsWith(";"))
+    {
+        labelWidth += ";";
+    }
+    if (string.IsNullOrEmpty(labelWidth))
+    {
+        labelWidth = "auto";
+    }
+}
+
+
+<div class="@containerClass" style="margin-bottom: 15px;">
+    @SharedTemplatesHelper.HorizontalLabel(ViewBag)
+    @*@SharedTemplatesHelper.CreateHtmlObject(ViewBag, Html.CheckBox(propertyExpression))*@
+    
+    <div style="float:none; padding-top: 4px; padding-left:@(labelWidth)">
+        @Html.CheckBox(propertyExpression)
+    </div>
+    @*@Html.CheckBox(propertyExpression)*@
+</div>

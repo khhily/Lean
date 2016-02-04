@@ -1,0 +1,118 @@
+﻿@model PDM<IEnumerable<UserInfo>, UserCondition>
+@{
+    ViewBag.Title = "Index";
+    var datas = PageDatas.GetInstance();
+    datas.GetUserRoleSelectList(false);
+}
+
+@using (Html.BeginForm())
+{
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            @Html.TextBlockFor(m => m.Condition.UserCode, "col-xs-3")
+            @Html.TextBlockFor(m => m.Condition.UserName, "col-xs-3")
+            @SharedTemplatesHelper.SearchBtnBlock()
+        </div>
+        <div class="panel-body">
+            <div class="panel panel-info">
+                <div class="panel-heading clearfix">
+                    用户列表
+                    <input type="button" value="新增" onclick="IndexPage.AddUser()" class="btn btn-xs color-add" />
+                </div>
+                <div class="panel-body">
+                    <table class="show_table table">
+                        <thead>
+                            <tr>
+                                <td>用户代码</td>
+                                <td>用户名称</td>
+                                <td>用户类型</td>
+                                <td>性别</td>
+                                <td>Email</td>
+                                <td>QQ</td>
+                                <td>操作</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Data != null)
+                            {
+                                foreach (var item in Model.Data)
+                                {
+                                    <tr>
+                                        <td>@(item.UserCode)</td>
+                                        <td>@(item.UserName)</td>
+                                        <td>@(WGX.Common.Helper.EnumHelper.GetDescription((UserTypeEnum)item.UserType))</td>
+                                        <td>@(item.UserGender == null ? "" : WGX.Common.Helper.EnumHelper.GetDescription((UserGenderEnum)item.UserGender.Value))</td>
+                                        <td>@(item.Email)</td>
+                                        <td>@(item.QQ)</td>
+                                        <td>
+                                            <div class="btn-group btn-group-xs">
+                                                <button type="button" class="btn btn-default" onclick="IndexPage.EditUser(@item.ID)"><span class="glyphicon glyphicon-pencil"></span></button>
+                                                <input type="button" class="btn btn-default" value="授权" onclick="IndexPage.AssignPermission(@item.ID)" />
+                                                <button type="button" class="btn btn-default" value="ShowImage" onclick="IndexPage.ShowImage(@item.ID)"><span>照片管理</span></button>
+                                                <button type="button" class="btn btn-default" onclick="IndexPage.DeleteUser(@item.ID)"><span class="glyphicon glyphicon-trash"></span></button>
+                                                
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            @if (Model != null && Model.Condition != null)
+            {
+                @Html.Pager(m => m.Condition.Pager)
+            }
+        </div>
+    </div>
+}
+
+@section scripts{
+    <script>
+    var IndexPage = window.IndexPage || {};
+    (function (_) {
+        _.AddUser = function () {
+            IndexPage.ShowSubPage("新增用户", 850, 500, '@Url.Action("Create")');
+        };
+
+        _.EditUser = function (id) {
+            IndexPage.ShowSubPage("编辑用户", 850, 500, '@Url.Action("Edit")/' + id);
+        };
+
+        _.DeleteUser = function (id) {
+            WGX.ColorBox.Confirm("", "warn", "提示", "是否要删除该用户?", function () {
+                $.ajax({
+                    url: '@Url.Action("Delete")',
+                    data: 'id=' + id,
+                    dataType: 'json',
+                    type: 'post',
+                    success: function (data) {
+                        if (data.success) {
+                            $("#btn_Search").click();
+                        } else {
+                            alert(data.message);
+                        }
+                    }
+                });
+            });
+        };
+    
+        _.AssignPermission = function (id) {
+            IndexPage.ShowSubPage("授权", 600, 600, '@Url.Action("AssignPermission")/' + id);
+        };
+
+        _.ShowSubPage = function (title, width, height, url) {
+            WGX.ColorBox.AutoPage(title, width, height, url, function () {
+                $("#btn_Search").click();
+            });
+        };
+
+        _.ShowImage = function(id){
+            IndexPage.ShowSubPage("照片预览", 900, 600, '@Url.Action("UserImageManage")/' + id);
+        };
+    })(IndexPage);
+</script>
+}

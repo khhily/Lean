@@ -1,0 +1,244 @@
+﻿@using Newtonsoft.Json
+@using WGX.Common.Helper
+@model PDM<IEnumerable<BaseModule>, ModuleCondition>
+@{
+    ViewBag.Title = "Index";
+    var datas = PageDatas.GetInstance();
+}
+<style>
+    .treetable_icon {
+        width: 320px;
+    }
+
+    .treetable_url {
+        overflow: hidden;
+        width: 300px;
+
+    }
+</style>
+@using (Html.BeginForm())
+{
+    <div class="panel panel-info">
+        <div class="panel-heading clearfix">
+            模块列表
+            <div class="btn-group btn-group-xs">
+                <button type="button" class="btn color-add" onclick="ModuleIndexPage.AddModule()"><span>新增</span></button>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="module-condition">
+                <div class="row" style="padding: 0 15px; margin-bottom: 15px;">
+                    @Html.BoolDropDownListBlockFor(m => m.Condition.IsBack, "是", "否", "全部", "col-xs-2", "50px")
+                    @SharedTemplatesHelper.SearchBtnBlock()
+                </div>
+            </div>
+            <div id="module-treetable">
+                <table id="list-table" class="show_table table">
+                    <thead>
+                        <tr>
+                            <td>模块代码</td>
+                            <td>模块名称</td>
+                            <td>模块地址</td>
+                            <td>后台模块</td>
+                            <td>是否菜单</td>
+                            <td>模块序号</td>
+                            <td>功能</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Data != null)
+                        {
+                            foreach (var menu in Model.Data)
+                            {
+                                if (menu.ParentID == 0)
+                                {
+                                    <tr data-pid="@menu.ParentID" data-id="@menu.ID" data-tree-level="1" data-expand="false">
+                                        <td class="treetable_icon">
+                                            <div class="left glyphicon glyphicon-chevron-right icon-border"></div>
+                                            <div class="left trchk"><input type="checkbox" class="module-checkbox checkbox checkbox-inline" /></div>
+                                            <div class="left nav-text">@menu.ModuleCode</div>
+                                        </td>
+                                        <td>@(menu.ModuleName)</td>
+                                        <td class="text-left treetable_url">@(menu.ModuleUrl)</td>
+                                        <td>
+                                            <input type="checkbox" value="@menu.IsBack" onclick="return false;" @(menu.IsBack ? "checked=checked" : "") />
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" value="@menu.IsMenu" onclick="return false;" @(menu.IsMenu ? "checked=checked" : "") />
+                                        </td>
+                                        <td>@(menu.ModuleOrder)</td>
+                                        <td>
+                                            <div class="btn-group btn-group-xs">
+                                                <a class="btn btn-default" href="@Url.Action("Edit")/@menu.ID"><span class="glyphicon glyphicon-pencil"></span></a>
+                                                <a class="btn btn-default" href="javascript:;" onclick="ModuleIndexPage.Delete(this)"><span class="glyphicon glyphicon-trash"></span></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+@section scripts{
+    <script type="text/javascript">
+    var ModuleIndexPage = window.ModuleIndexPage || {};
+    (function (_) {
+        //展开
+        _.treeObjClick = function (node) {
+            //var pid = $(node).attr("data-pid");
+            var id = $(node).attr("data-id");
+            var treeLevel = parseInt($(node).attr("data-tree-level"));
+            var subObjs = $("tr[data-pid='" + id + "']");
+            if (subObjs.length > 0) {
+                subObjs.each(function () {
+                    $(this).show();
+                    if ($(this).attr("data-expand") == "true") {
+                        _.treeObjClick(this);
+                    }
+                });
+            } else {
+                $.ajax({
+                    url: '@Url.Action("GetSubMenus")',
+                    data: 'id=' + id,
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+                        if (data.success) {
+                            _.AddSubMenus(id, treeLevel + 1, data.Menus);
+                        }
+                    }
+                });
+            }
+        };
+
+        //关闭
+        _.removeSubObjs = function (id) {
+            var children = $("tr[data-pid='" + id + "']");
+            if (children.length > 0) {
+                for (var i = 0; i < children.length; i++) {
+                    var pid = $(children[i]).attr("data-id");
+                    _.removeSubObjs(pid);
+                    $(children[i]).hide();
+                }
+            }
+        };
+    
+        //加载子节点
+        _.AddSubMenus = function (pid, treeLevel, datas) {
+            if (datas && datas.length > 0) {
+                var parentObj = $("tr[data-id=" + pid + "]");
+                for (var i = 0; i < datas.length; i++) {
+                    var trobj = $("<tr data-pid='" + pid + "' data-id='" + datas[i].id + "' data-tree-level='" + treeLevel + "' data-expand='false'></tr>");
+                    trobj.append("<td class='treetable_icon'><div class='left glyphicon glyphicon-chevron-right icon-border'></div><div class='left trchk'><input type='checkbox' class='module-checkbox checkbox checkbox-inline' /></div><div class='left nav-text'>" + datas[i].ModuleCode + "</div></td>");
+                    trobj.append("<td>" + datas[i].ModuleName + "</td><td class='text-left'>" + datas[i].ModuleUrl + "</td><td><input type='checkbox' onclick='return false;' value='" + datas[i].IsBack + "' " + (datas[i].IsBack ? "checked='checked'" : "") + " /></td><td><input type='checkbox' onclick='return false;' value='" + datas[i].IsMenu + "' " + (datas[i].IsMenu ? "checked='checked'" : "") + " /></td><td>" + datas[i].ModuleOrder + "</td><td><div class='btn-group btn-group-xs'><a class='btn btn-default' href='@Url.Action("Edit")/" + datas[i].id + "'><span class='glyphicon glyphicon-pencil'></span></a><a class='btn btn-default' href='javascript:;' onclick='ModuleIndexPage.Delete(this)'><span class='glyphicon glyphicon-trash'></span></a></div></td>");
+                    $(trobj).insertAfter($(parentObj));
+                    parentObj = trobj;
+                }
+
+                _.CalcPaddingLeft();
+                _.NavClick();
+                _.HoverChangeColor();
+                _.SelectedColor();
+            }
+        };
+
+        //计算左内间距
+        _.CalcPaddingLeft = function () {
+            $(".treetable_icon").each(function () {
+                var treeLevel = parseInt($(this).closest("tr").attr("data-tree-level"));
+                $(this).css("padding-left", (((treeLevel - 1) * 15) + 5) + "px");
+            });
+        };
+
+        //绑定单击事件
+        _.NavClick = function () {
+            $(".treetable_icon").each(function () {
+                $(this).unbind("click").click(function () {
+                    var iconObj = $(this).find(".icon-border");
+                    var parentObj = $(this).closest("tr");
+                    //展开
+                    if ($(parentObj).attr("data-expand") == "false") {
+                        $(iconObj).removeClass("glyphicon-chevron-right");
+                        $(iconObj).addClass("glyphicon-chevron-down");
+                        _.treeObjClick($(parentObj));
+                        $(parentObj).attr("data-expand", "true");
+                    } else {
+                        //关闭
+                        $(iconObj).removeClass("glyphicon-chevron-down");
+                        $(iconObj).addClass("glyphicon-chevron-right");
+                        var id = $(parentObj).attr("data-id");
+                        _.removeSubObjs(id);
+                        $(parentObj).attr("data-expand", "false");
+                    }
+                    //_.InitTrColor();
+                    _.HoverChangeColor();
+                    _.SelectedColor();
+                });
+            });
+        };
+
+        _.Delete = function (obj) {
+            var id = $(obj).closest("tr").attr("data-id");
+            WGX.ColorBox.Confirm("", "warn", "提示", "确定要删除该记录吗?", function () {
+                $.ajax({
+                    url: '@Url.Action("Delete")',
+                    data: 'id=' + id,
+                    dataType: 'json',
+                    type: 'post',
+                    success: function (data) {
+                        //alert(data.message);
+                        if (data.success) {
+                            top.window.location.reload();
+                        }
+                    }
+                });
+            });
+        };
+
+        _.AddModule = function () {
+            var id = $(".module-checkbox:checked").closest("tr").attr("data-id");
+            if (id == null || id == "") {
+                id = "0";
+            }
+            top.window.location.href = "@Url.Action("Create")/" + id;
+        };
+    
+        //_.InitTrColor = function () {
+        //    $("#list-table tbody tr").removeClass("odd").removeClass("even");
+        //    $("#list-table tbody tr:visible:odd").addClass("odd");
+        //    $("#list-table tbody tr:visible:even").addClass("even");
+        //};
+
+        _.HoverChangeColor = function () {
+            $("#list-table tbody tr").hover(
+                function () { $(this).addClass("hover") },
+                function () { $(this).removeClass("hover") }
+            );
+        };
+        
+        //_.currentId;
+        _.SelectedColor = function () {
+            $("#list-table tbody tr").unbind("click").click(function () {
+                $(".module_table .select_tr").removeClass("select_tr");
+                $(this).addClass("select_tr");
+                $(".module-checkbox").prop("checked", false);
+                $(this).find(".module-checkbox").prop("checked", true);
+            });
+        };
+    })(ModuleIndexPage);
+
+    
+    $(function () {
+        ModuleIndexPage.NavClick();
+        //ModuleIndexPage.InitTrColor();
+        ModuleIndexPage.HoverChangeColor();
+        ModuleIndexPage.SelectedColor();
+
+        IndexPageHelper.SetHistory();
+    });
+</script>
+}

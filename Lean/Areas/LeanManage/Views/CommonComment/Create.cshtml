@@ -1,0 +1,126 @@
+﻿@model CommonComment
+@{
+    ViewBag.Title = "Create";
+    var datas = PageDatas.GetInstance();
+    var content = Model != null ? Model.DiscussContent : "";
+    var controller = ViewContext.RouteData.Values["controller"].ToString();
+    var action = ViewContext.RouteData.Values["action"].ToString();
+    var ctrl = ViewContext.Controller as Lean.Areas.LeanManage.Controllers.CommonCommentController;
+}
+@Styles.Render("~/Content/ueditor/themes/iframe.css")
+@using (Html.BeginForm("Create", controller, FormMethod.Post, new { id = "mainForm" }))
+{
+    @Html.HiddenFor(m => m.ID)
+    <div class="container">
+        @Html.HiddenFor(m => m.ModuleCode)
+        <div class="select_type row">
+            @Html.DropDownBlockFor(m => m.DiscussType, datas.GetEnumList(typeof(DiscussTypeEnum)), "col-xs-4")
+            @Html.TextBlockFor(m => m.DiscussTitle, "col-xs-6")
+        </div>
+        <div class="row" id="input_div" style="display:none;">
+            <!--输入的内容-->
+            <textarea style="width: 100%; height: 600px;" rows="20" id="discuss_content">@(content)</textarea>
+        </div>
+        <div class="row" id="upload_div" style="display:none;">
+            <!--文件选择-->
+            @Html.HiddenFor(m => m.DiscussFileUrl)
+            @Html.FileUploadBlockFor(m => m.DiscussOfficeFileUrl, "col-xs-4", "120px", "", "30px", null, true, "upload_file")
+        </div>
+
+        <div class="panel-footer center">
+            <div class="btn-group btn-group-sm">
+                <button type="button" name="btnSave" class="btn btn-primary" value="Save" id="btnSave"><span>保存</span></button>
+                @if (ctrl.ListCommonCommentBiz.CodeList.Contains(Model.ModuleCode))
+                {
+                    <input type="button" onclick="IndexPageHelper.GoToIndex('@Url.Action("Index")?ModuleCode=@(Model.ModuleCode)')" class="btn btn-default" value="返回列表" />
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts{
+<script src="~/Content/ueditor/ueditor.config.js"></script>
+<script src="~/Content/ueditor/ueditor.all.js"></script>
+<script src="~/Content/ueditor/lang/zh-cn/zh-cn.js"></script>
+    <script>
+        $(function () {
+            CommonCommentPageCreate = window.CommonCommentPageCreate || {};
+            (function (_) {
+                _.ChangeSelect = function (obj) {
+                    if ($(obj).val() == '1') {
+                        $("#input_div").show();
+                        $("#upload_div").hide();
+                    } else {
+                        $("#input_div").hide();
+                        $("#upload_div").show();
+                    }
+                }
+
+                _.PageLoad = function () {
+                    mainUE = UE.getEditor('discuss_content', {
+                        toolbars: [[
+                        'fullscreen', 'source', '|', 'undo', 'redo', '|',
+                        'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+                        'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
+                        'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
+                        'directionalityltr', 'directionalityrtl', 'indent', '|',
+                        'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
+                        'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
+                        'simpleupload', 'insertimage', 'emotion', 'scrawl', 'insertvideo', 'music', 'attachment', 'map', 'gmap', 'insertframe', 'insertcode', 'webapp', 'pagebreak', 'template', 'background', '|',
+                        'horizontal', 'date', 'time', 'spechars', 'snapscreen', 'wordimage', '|',
+                        'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts', '|',
+                        'preview', 'searchreplace', 'help'
+                        ]]
+                    });
+                    @*mainUE.ready(function () {
+                        mainUE.setContent("@(content)");
+                    });*@
+
+                    $("#btnSave").click(function () {
+                        var discussType = $("#DiscussType").val();
+                        var discussTitle = $("#DiscussTitle").val();
+                        if (discussTitle.trim() == "") {
+                            alert("标题不能为空!");
+                            return;
+                        }
+                        if (discussType == "1") {
+                            var mainContent = mainUE.getContent();
+                            if (mainContent.length <= 0) {
+                                alert("内容不能为空!");
+                                return;
+                            }
+                            $("#DiscussContent").remove();
+                            $("#mainForm").append("<input type='hidden' name='DiscussContent' id='DiscussContent' value='" + mainContent + "' />");
+                        } else {
+                            if ($("#DiscussFileUrl").val() == "" || $("#DiscussOfficeFileUrl").val() == "") {
+                                alert("必须上传文件!");
+                                return;
+                            }
+                        }
+                        $("#mainForm").submit();
+                    });
+
+                    $("#DiscussType").change(function () {
+                        CommonCommentPageCreate.ChangeSelect(this);
+                    });
+
+                    $("#upload_file").WGXUploadFile({
+                        action: '@Url.Action("UploadOfficeFile")',
+                        params: 'ModuleCode=' + $("#ModuleCode").val(),
+                        callback: function (fileId, data) {
+                            if (data.success) {
+                                $("#DiscussOfficeFileUrl").val(data.officeUrl);
+                                $("#DiscussFileUrl").val(data.flashUrl);
+                                $("#upload_file").WGXuploadFile("remove");
+                            }
+                            alert(data.message);
+                        }
+                    });
+
+                    CommonCommentPageCreate.ChangeSelect($("#DiscussType"));
+                }();
+            })(CommonCommentPageCreate);
+        });
+    </script>
+}

@@ -1,0 +1,26 @@
+﻿@model object
+@{
+    Layout = null;
+    string propertyExpression = ViewBag.PropertyName;
+    string containerClass = ViewBag.ContainerClass;
+    RouteValueDictionary htmlAttributes = SharedTemplatesHelper.MargeClass(ViewBag);
+    
+    var metadata = ModelMetadata.FromStringExpression(propertyExpression, Html.ViewData);
+    string fmt = ViewBag.Formart;
+    if (string.IsNullOrWhiteSpace(fmt)
+        && (
+            metadata.ModelType == typeof(DateTime)
+            || metadata.ModelType == typeof(DateTime?))
+        )
+    {
+        fmt = @"{0:yyyy\/MM\/dd}";
+    }
+}
+
+<div class="@containerClass" style="margin-bottom: 15px;">
+    @SharedTemplatesHelper.HorizontalLabel(ViewBag)
+    @SharedTemplatesHelper.CreateHtmlObject(ViewBag, Html.TextBox(propertyExpression, null, fmt, htmlAttributes))
+    @*<div style="float:none; padding-left:@(labelWidth);">
+        @Html.TextBox(propertyExpression, null, fmt, htmlAttributes)
+    </div>*@
+</div>

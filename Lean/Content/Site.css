@@ -1,0 +1,169 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+
+/** 自定义 */
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.center {
+    text-align: center;
+}
+
+.clearboth {
+    clear: both;
+}
+
+.clearleft {
+    clear: left;
+}
+
+.clearright {
+    clear: right;
+}
+
+.utility-nav .title {
+    width: auto;
+    text-align: left;
+}
+
+.utility-nav .input input {
+    width: 150px;
+    padding: 0 5px;
+    height: 25px;
+}
+
+.utility-nav .button button {
+    font-size: 9px;
+}
+
+/* 表格样式 */
+
+table.show_table {
+	font-family: verdana,arial,sans-serif;
+	font-size:11px;
+	color:#333333;
+    border: 1px solid #a9c6c9;
+	border-collapse: collapse;
+}
+table.show_table thead td {
+	background-color:#c3dde0;
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #a9c6c9;
+}
+table.show_table tr {
+	background-color:#d4e3e5;
+}
+table.show_table tbody td {
+	border-width: 1px;
+	
+	border-style: solid;
+	border-color: #a9c6c9;
+}
+
+table.show_table tbody tr.hover, table.show_table tr.select_tr {
+    background-color: rgb(255, 255, 204)!important;
+}
+
+/*.treetable_icon .icon-border {
+    width: 15px;
+    height: 15px;
+}
+
+.treetable_icon .nav-text {
+    height: 20px;
+}
+
+.treetable_icon {
+    text-align: left;
+}*/
+
+.treetable_icon .trchk .module-checkbox {
+    margin-top: 0;
+}
+
+.module_table {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+/*.odd {
+    background-color: #bbf;
+}
+
+.even {
+    background-color: #ffc;
+}
+
+#list-table .hover {
+    background-color: #ffff00;
+}
+
+#list-table .selected {
+    background-color: #ffff00;
+}*/
+
+/*#list-table thead tr {
+    background: #00ced1;
+}*/
+    
+/*#list-table tbody tr td {
+    border: 1px solid #00ffff;
+}
+.panel-body .module-condition {
+    width: 100%;
+}*/
+
+/* 表格样式结束 */
+
+/* 按钮 */
+
+.color-add {
+    background-color: #FFFF99;
+}
+
+/* 按钮结束*/
+
+/* 布局 */
+.body-content {
+    padding-top: 15px;
+}
+/* 布局End*/

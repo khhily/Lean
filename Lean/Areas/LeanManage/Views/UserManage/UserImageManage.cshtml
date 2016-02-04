@@ -1,0 +1,81 @@
+﻿@model UserInfo
+@{
+    ViewBag.Title = "UserImageManage";
+    Layout = "~/Views/Shared/_SubPageLayout.cshtml";
+    var directoryPath = ConfigHelper.UploadFilePath + UploadPathEnum.UserInfo.ToString();
+    directoryPath = directoryPath.Replace("/", "\\");
+    if (!directoryPath.Trim().EndsWith("\\"))
+    {
+        directoryPath = directoryPath + "\\";
+    }
+    
+}
+
+@using(Html.BeginForm())
+{
+    <div class="container">
+        <div class="row center" id="imgDiv">
+            @Html.HiddenFor(m => m.ID)
+            @if (Model != null && !string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img style="max-width: 720px;" src="@(directoryPath + Model.ImageUrl)" />
+            }
+        </div>
+        
+        @Html.FileUploadBlockFor(m => m.ImageUrl, "col-xs-12", "100px", "", "30px", new { style = "max-width: 900px;" }, true, "ImageFile")
+        <div class="panel-footer center">
+            <div class="btn-group btn-group-xs">
+                <button type="button" id="btn_Save" value="Save" class="btn btn-primary">保存</button>
+                <button type="button" id="btn_Close" value="Close" class="btn btn-default">关闭</button>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts{
+    <script>
+
+        $(function () {
+            UserImageManagePage = window.UserImageManagePage || {};
+            (function (_) {
+                _.PageLoad = function () {
+                    $("#ImageFile").WGXUploadFile({
+                        action: '@Url.Action("UploadImageFile")',
+                        callback: function (fileId, data) {
+                            if (data.success) {
+                                $("#ImageUrl").val(data.fileurl);
+                                if ($("#imgDiv").find("img").length <= 0) {
+                                    $("#imgDiv").append("<img style='max-width: 720px;' src='" + data.imgUrl + "' />");
+                                } else {
+                                    $("#imgDiv").find("img").attr("src", data.imgUrl);
+                                }
+                            }
+                            alert(data.message);
+                        }
+                    });
+
+                    $("#btn_Close").click(function () {
+                        WGX.ColorBox.Close();
+                    });
+
+                    $("#btn_Save").click(function () {
+                        $.ajax({
+                            url: '@Url.Action("UserImageManage")',
+                            data: $("form").serialize(),
+                            dataType: "json",
+                            type: "post",
+                            success: function (data) {
+                                if (data.success) {
+                                    WGX.ColorBox.Close();
+                                } else {
+                                    alert(data.message);
+                                }
+                            }
+                        });
+                    });
+                }();
+            })(UserImageManagePage);
+        });
+        
+    </script>
+}

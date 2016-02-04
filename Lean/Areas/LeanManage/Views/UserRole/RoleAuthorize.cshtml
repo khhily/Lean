@@ -1,0 +1,137 @@
+﻿
+@model UserRole
+@{
+    ViewBag.Title = "RoleAuthorize";
+    Layout = "~/Views/Shared/_SubPageLayout.cshtml";
+    var idJson = "[]";
+    if (Model != null && Model.UserRoleRight.Any())
+    {
+        var moduleIdList = Model.UserRoleRight.Select(q => q.ModuleID).ToList();
+        idJson = Json.Encode(moduleIdList);
+        if (string.IsNullOrEmpty(idJson))
+        {
+            idJson = "[]";
+        }
+    }
+    var datas = PageDatas.GetInstance();
+    var moduleList = datas.GetModuleFromDB().ToList();
+    var modulesJson = Json.Encode(moduleList.Select(q => new {id = q.ID, pid = q.ParentID, name = q.ModuleName}).ToList());
+}
+<style>
+    .active-arrow {
+        display: inline-block;
+    }
+    li {
+        list-style: none;
+    }
+    ul {
+        padding-left: 15px;
+    }
+</style>
+@using (Html.BeginForm())
+{
+    <div class="tree-container">
+        <div class="container-header">
+            @Html.HiddenFor(m => m.ID)
+        </div>
+        <div class="container-body">
+            <div id="hidden-div"></div>
+        </div>
+        <div class="container-footer center">
+            <div class="btn-group btn-group-sm">
+                <button type="submit" class="btn btn-primary" id="SaveBtn" value="Save">保存</button>
+                <button type="button" class="btn btn-default" id="btnClose" value="Close">关闭</button>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts
+{
+    <script>
+        var modulesJson = @Html.Raw(modulesJson);
+        var currentRight = @Html.Raw(idJson);
+        var addModules = function(pid, pObj) {
+            var ulObj = $("<ul></ul>");
+            pObj.append(ulObj);
+            for (var i = 0; i < modulesJson.length; i++) {
+                if (modulesJson[i].pid == pid) {
+                    var liObj = $("<li data-id ='" + modulesJson[i].id + "' data-pid='" + modulesJson[i].pid + "' data-expand='true'><span class='active-arrow glyphicon glyphicon-chevron-down'></span><span><input type='checkbox' id='chk_" + modulesJson[i].id + "' /></span>" + modulesJson[i].name + "</li>");
+                    ulObj.append(liObj);
+                    addModules(modulesJson[i].id, liObj);
+                }
+            }
+        };
+
+        var changeHidden = function(obj) {
+            var id = $(obj).closest("li").attr("data-id");
+            var input = $("#hidden-div :hidden[value=" + id + "]");
+            if ($(obj).is(":checked")) {
+                if (input.length > 0) {
+                    $(input).val(id);
+                } else {
+                    $("#hidden-div").append("<input type='hidden' name='UserRoleRight[" + $("#hidden-div input").length + "].ModuleID' value='" + id + "' />");
+                }
+            } else {
+                if (input.length > 0) {
+                    input.remove();
+                }
+            }
+            resetIndex();
+        };
+
+        var resetIndex = function() {
+            var index = 0;
+            $("#hidden-div :hidden").each(function(i, e) {
+                var name = $(this).attr("name");
+                var preName = name.substring(0, name.indexOf("["));
+                var suffix = name.substring(name.indexOf(".") + 1);
+
+                name = preName + "[" + index + "]." + suffix;
+                $(this).attr("name", name);
+                index++;
+            });
+        };
+            
+        $(function() {
+            addModules(0, $(".container-body"));
+            
+            if (currentRight.length > 0) {
+                for (var i = 0; i < currentRight.length; i++) {
+                    $("li[data-id=" + currentRight[i] + "] > span > :checkbox").prop("checked", true);
+                    $("#hidden-div").append($("<input type='hidden' name='UserRoleRight[" + i + "].ModuleID' value='" + currentRight[i] + "' />"));
+                }
+            }
+
+            $(":checkbox[id*='chk_']").click(function() {
+                var chked = $(this).prop("checked");
+                changeHidden(this);
+                //选择子节点或取消子节点
+                $(this).parent().siblings("ul").find(":checkbox").each(function() {
+                    $(this).prop("checked", chked);
+                    changeHidden(this);
+                });
+            });
+
+            $("#btnClose").click(function() {
+                WGX.ColorBox.Close();
+            });
+
+            $(".active-arrow").click(function() {
+                var expand = $(this).closest("li").attr("data-expand");
+                if (expand == "true") {
+                    $(this).siblings("ul").hide();
+                    $(this).closest("li").attr("data-expand", "false");
+                    $(this).removeClass("glyphicon-chevron-down");
+                    $(this).addClass("glyphicon-chevron-right");
+                } else {
+                    $(this).siblings("ul").show();
+                    $(this).closest("li").attr("data-expand", "true");
+                    $(this).removeClass("glyphicon-chevron-right");
+                    $(this).addClass("glyphicon-chevron-down");
+                }
+            });
+        });
+        //addModules(0, $(".container-body"));
+    </script>
+}

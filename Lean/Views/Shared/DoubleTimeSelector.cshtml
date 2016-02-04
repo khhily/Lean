@@ -1,0 +1,39 @@
+﻿@model object
+@{
+    Layout = null;
+    string propertyExpression = ViewBag.PropertyName;
+    string containerClass = ViewBag.ContainerClass;
+    string labelWidth = ViewBag.LabelWidth ?? "";
+    if (!string.IsNullOrEmpty(labelWidth) && !labelWidth.Trim().EndsWith(";"))
+    {
+        labelWidth += ";";
+    }
+    string inputWidth = ViewBag.InputWidth ?? "";
+    
+    if (!string.IsNullOrEmpty(inputWidth) && !inputWidth.Trim().EndsWith(";"))
+    {
+        inputWidth += ";";
+    }
+    if (!string.IsNullOrEmpty(inputWidth))
+    {
+        inputWidth = "width:" + inputWidth;
+    }
+    string startName = ViewBag.StartProperty ?? "";
+    string endName = ViewBag.EndProperty ?? "";
+
+    RouteValueDictionary startHtmlAttributes = SharedTemplatesHelper.MargeClass(ViewBag, false);
+    RouteValueDictionary endHtmlAttributes = SharedTemplatesHelper.MargeClass(ViewBag, false);
+    startHtmlAttributes["style"] = "width: 48%; float:left;";
+    endHtmlAttributes["style"] = "width: 48%;float:left;";
+}
+
+<div class="@containerClass" style="margin-bottom: 15px;">
+    @SharedTemplatesHelper.HorizontalLabel(ViewBag)
+    <div style="float: none; padding-left: @(labelWidth)">
+        <div style="@(inputWidth)">
+            @Html.TextBox(startName, null, startHtmlAttributes)
+            <span style="float:left;width:4%;">-</span>
+            @Html.TextBox(endName, null, endHtmlAttributes)
+        </div>
+    </div>
+</div>

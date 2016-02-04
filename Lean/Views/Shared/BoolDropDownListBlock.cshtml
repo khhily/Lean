@@ -1,0 +1,40 @@
+﻿@model object
+@{
+    this.Layout = null;
+    string propertyExpression = ViewBag.PropertyName;
+    string containerClass = ViewBag.ContainerClass;
+    bool IsNullable = ViewBag.IsNullable ?? false;
+
+    var value = ModelMetadata.FromStringExpression(propertyExpression, ViewData);
+
+    var items = new List<SelectListItem>() {
+        new SelectListItem(){
+             Value = "true",
+              Text = ViewBag.TrueLabel,
+              Selected = value != null && value.Model != null && (bool)value.Model
+        },
+        new SelectListItem(){
+             Value = "false",
+              Text = ViewBag.FalseLabel,
+              Selected = value != null && value.Model != null && (bool)value.Model != true
+        }
+    };
+    
+    if (IsNullable)
+    {
+        items.Insert(0, new SelectListItem()
+        {
+            Value = "",
+            Text = ViewBag.NullLabel
+        });
+    }
+
+    RouteValueDictionary htmlAttributes = SharedTemplatesHelper.MargeClass(ViewBag);
+    
+}
+
+<div class="@containerClass" style="margin-bottom: 15px;">
+    @SharedTemplatesHelper.HorizontalLabel(ViewBag)
+    @SharedTemplatesHelper.CreateHtmlObject(ViewBag, Html.DropDownList(propertyExpression, items, htmlAttributes))
+    @*@Html.DropDownList(propertyExpression, items, htmlAttributes)*@
+</div>

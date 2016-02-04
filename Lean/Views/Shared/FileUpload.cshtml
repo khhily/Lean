@@ -1,0 +1,55 @@
+﻿@model object
+@{
+    Layout = null;
+    string propertyExpression = ViewBag.PropertyName;
+    string containerClass = ViewBag.ContainerClass;
+    string fileName = ViewBag.FileName;
+    string labelWidth = ViewBag.LabelWidth ?? "";
+    string btnWidth = ViewBag.ButtonWidth ?? "";
+    string lineHeight = ViewBag.LineHeight ?? "";
+    
+    string marginTop = lineHeight;
+    if (!string.IsNullOrEmpty(lineHeight))
+    {
+        if(lineHeight.Trim().EndsWith(";"))
+        {
+            lineHeight = lineHeight.Trim().Substring(0, lineHeight.Trim().Length - 1);
+            marginTop = lineHeight;
+        }
+        lineHeight = string.Format("height: {0};", lineHeight.Trim());
+        marginTop = string.Format("margin-top: -{0};", marginTop.Trim());
+    }
+    if (!string.IsNullOrEmpty(labelWidth) && !labelWidth.Trim().EndsWith(";"))
+    {
+        labelWidth += ";";
+    }
+    string inputWidth = ViewBag.InputWidth ?? "";
+    
+    if (!string.IsNullOrEmpty(inputWidth) && !inputWidth.Trim().EndsWith(";"))
+    {
+        inputWidth += ";";
+    }
+    if (!string.IsNullOrEmpty(inputWidth))
+    {
+        inputWidth = "width:" + inputWidth;
+    }
+    if (!string.IsNullOrEmpty(btnWidth) && btnWidth.Trim().EndsWith(";"))
+    {
+        btnWidth = btnWidth.Trim().Substring(0, btnWidth.Trim().Length - 1);
+    }
+    RouteValueDictionary htmlAttributes = SharedTemplatesHelper.MargeClass(ViewBag, false);
+    htmlAttributes.Add("readonly", "readonly");
+}
+
+<div class="@containerClass" style="margin-bottom: 15px;">
+    @SharedTemplatesHelper.HorizontalLabel(ViewBag)
+    <div style="float: none; padding-right:@(btnWidth); padding-left: @(labelWidth)">
+        <div style="@(inputWidth)">
+            @Html.TextBox(propertyExpression, null, htmlAttributes)
+        </div>
+    </div>
+    <div style="float:right; position: relative; width: @(btnWidth); @(marginTop) @(lineHeight)">
+        <button type="button" class="btn" style="width: 100%;height: 100%;"><span>...</span></button>
+        <input type="file" name="@(fileName)" class="color-add" id="@(fileName)" style="width: 100%;height: 100%;position:absolute;top:0px;opacity: 0; filter: alpha(opacity=0);" />
+    </div>
+</div>

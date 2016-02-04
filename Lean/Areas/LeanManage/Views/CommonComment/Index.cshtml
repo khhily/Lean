@@ -1,0 +1,93 @@
+﻿@model PDM<IEnumerable<CommonComment>, CommonCommentCondition>
+@{
+    ViewBag.Title = "Index";
+    string moduleCode = Model != null && Model.Condition != null ? Model.Condition.ModuleCode : "None";
+}
+
+@using (Html.BeginForm())
+{
+    <div class="panel panel-info">
+        <div class="panel-heading clearfix">
+            @Html.TextBlockFor(m => m.Condition.ModuleCode, "col-xs-12")
+            @SharedTemplatesHelper.SearchBtnBlock()
+        </div>
+        
+        <div class="panel-body">
+            <div class="btn-group btn-group-sm">
+                <a class="btn btn-default" href="@Url.Action("Create", "CommonComment")?ModuleCode=@(moduleCode)" ><span class="glyphicon glyphicon-plus"></span></a>
+            </div>
+
+            <table class="table show_table">
+                <thead>
+                    <tr>
+                        <td>标题</td>
+                        <td>发布时间</td>
+                        <td>功能</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Data != null)
+                    {
+                        foreach (var item in Model.Data)
+                        {
+                            <tr>
+                                <td>@(item.DiscussTitle)</td>
+                                <td style="width: 200px;">@(item.DiscussDate.ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                                <td style="width: 100px;">
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-default" type="button" onclick="CommonCommentIndexPage.Edit(@(item.ID))"><span class="glyphicon glyphicon-pencil"></span></button>
+                                        <button class="btn btn-default" type="button" onclick="CommonCommentIndexPage.Delete(@(item.ID)"><span class="glyphicon glyphicon-trash"></span></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="panel-footer">
+            @if(Model != null && Model.Condition != null)
+            {
+                @Html.Pager(m => m.Condition.Pager)
+            }
+        </div>
+    </div>
+}
+
+@section scripts {
+    <script>
+        $(function () {
+            CommonCommentIndexPage = window.CommonCommentIndexPage || {};
+            (function (_) {
+                _.PageLoad = function () {
+
+                }();
+
+                _.Delete = function (id) {
+                    WGX.ColorBox.Confirm("", "warn", "提示", "是否要删除该记录?", function () {
+                        $.ajax({
+                            url: '@Url.Action("Delete")',
+                            data: 'id=' + id + "&moduleCode=@(moduleCode)",
+                            dataType: "json",
+                            type: "post",
+                            success: function (data) {
+                                if (data.success) {
+                                    $("#btn_Search").click();
+                                } else {
+                                    alert(data.message);
+                                }
+                            },
+                            error: function () {
+                                alert("System Error!");
+                            }
+                        });
+                    });
+                }
+
+                _.Edit = function (id) {
+                    window.location.href = "@Url.Action("Edit", "CommonComment", null)/" + id + "?moduleCode=@(moduleCode)";
+                }
+            })(CommonCommentIndexPage);
+        });
+    </script>
+}

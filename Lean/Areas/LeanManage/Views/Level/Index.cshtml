@@ -1,0 +1,100 @@
+﻿@model PDM<IEnumerable<LenLevel>, LevelCondition>
+@{
+    ViewBag.Title = "Index";
+}
+
+@using (Html.BeginForm())
+{
+    <div class="panel panel-info">
+        <div class="panel-heading clearfix">
+            @Html.TextBlockFor(m => m.Condition.LevelName, "col-xs-3")
+            @SharedTemplatesHelper.SearchBtnBlock()
+        </div>
+
+        <div class="panel-body">
+            <div class="btn-group btn-group-xs color-add">
+                <button type="button" id="btnAdd" class="btn">新增</button>
+            </div>
+            <table class="show_table table">
+                <thead>
+                    <tr>
+                        <td>等级编号</td>
+                        <td>等级名称</td>
+                        <td>功能</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Data != null)
+                    {
+                        foreach (var item in Model.Data)
+                        {
+                            <tr>
+                                <td>@(item.ID)</td>
+                                <td>@(item.LevelName)</td>
+                                <td>
+                                    <div class="btn-group btn-group-xs">
+                                        <button class="btn btn-default" type="button" value="Edit" onclick="LevelIndexPage.EditLevel(@item.ID)"><span class="glyphicon glyphicon-pencil"></span></button>
+                                        <button class="btn btn-default" type="button" value="Delete" onclick="LevelIndexPage.DeleteLevel(@item.ID)"><span class="glyphicon glyphicon-trash"></span></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="panel-footer">
+            @if (null != Model && null != Model.Condition)
+            {
+                @Html.Pager(m => m.Condition.Pager)
+            }
+        </div>
+    </div>
+}
+
+@section scripts{
+    <script>
+        $(function () {
+            LevelIndexPage = window.LevelIndexPage || {};
+            (function (_) {
+                _.PageLoad = function () {
+                    $("#btnAdd").click(function () {
+                        LevelIndexPage.AddLevel();
+                    });
+                }();
+
+                _.AddLevel = function () {
+                    LevelIndexPage.ShowColorBox("新建等级", "@Url.Action("Create")");
+                };
+
+                _.EditLevel = function (id) {
+                    LevelIndexPage.ShowColorBox("编辑等级", "@Url.Action("Edit")/" + id);
+                };
+
+                _.DeleteLevel = function (id) {
+                    WGX.ColorBox.Confirm("", "warn", "提示", "是否确认删除该数据", function () {
+                        $.ajax({
+                            url: '@Url.Action("Delete")',
+                            data: 'id=' + id,
+                            dataType: 'json',
+                            type: 'post',
+                            success: function (data) {
+                                if (data.success) {
+                                    $("#btn_Search").click();
+                                } else {
+                                    alert(data.message);
+                                }
+                            }
+                        });
+                    });
+                };
+
+                _.ShowColorBox = function (title, url) {
+                    WGX.ColorBox.AutoPage(title, 400, 300, url, function () {
+                        $("btn_Search").click();
+                    });
+                }
+            })(LevelIndexPage);
+        });
+    </script>
+}

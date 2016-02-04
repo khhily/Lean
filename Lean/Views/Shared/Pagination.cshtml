@@ -1,0 +1,25 @@
+﻿@model object
+
+@{
+    Layout = null;
+    var pagination = (Pagination)ViewBag.Pagination;
+    var pageItems = pagination.GetPageItems();
+    var hiddenName = (string)ViewBag.HiddenName;
+    var currPage = pagination.CurrPage - 1;
+}
+
+@if (pageItems != null && pageItems.Count > 0)
+{
+    <input type="hidden" name="@hiddenName" data-pager='true' value="@currPage" />
+    <ul class="pagination pagination-sm">
+        <li><span>共 @pagination.Total 笔 &nbsp;&nbsp;@pagination.TotalPage 页</span></li>
+        @foreach (var item in pageItems)
+        {
+            var className = item.IsCurrPage ? "active" : "";
+            var p = item.Page - 1;
+
+            <li class="@className"><a href='javascript:void(0)' onclick="PaginationHelper.Set('@hiddenName',@p)">@item.Label</a></li>
+        }
+    </ul>
+}
+

@@ -1,0 +1,159 @@
+#page {
+	_height:100%
+}
+* html .clearfix {
+	height:1%
+}
+#menu .sub {
+	margin-top: 0px!important;
+  _overflow: visible;
+  zoom: 0;
+}
+
+#menu .sub-levels {
+	margin-top: 0px!important;
+  _padding-top: 5px;
+	width: 900px;
+	line-height: 14px!important;
+}
+.grid-hBox {
+	_overflow: visible;
+	_height: 1%;
+	_margin-top: -55px;
+ *margin-top: -45px;
+}
+.loginBox input {
+	_padding: 0px;
+}
+.store, .knowlege, .events, .workshop, .columns {
+	_height: 40px
+}
+.rTlinks {
+	_background: none;
+ filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='img/icons/links.png')!important;
+}
+.rTmore {
+	 _background: URL("../Index.cfm-PageNotFound=404;http---www.lean.org-80-img-icons-more.gif")/*tpa=http://www.lean.org/img/icons/more.gif*/ no-repeat top center;
+}
+.leftsubNav a:hover {
+	_background: URL("../img/submenu/nav-act.gif")/*tpa=http://www.lean.org/img/submenu/nav-act.gif*/ top right no-repeat;
+}
+.leftsubNav div {
+	_background: URL("../img/submenu/nav-act.gif")/*tpa=http://www.lean.org/img/submenu/nav-act.gif*/ top right no-repeat;
+}
+.vTabsBox {
+	_overflow: visible;
+	_height: 100%;
+}
+.rTNote {
+	_background: none;
+ filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='img/icons/notes.png')!important;
+}
+.rTNotebook {
+	_background: none;
+ filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='img/icons/notebook.png')!important;
+}
+.grid_Rnav {
+	_height: 180px;
+	_zoom: 1;
+	_overflow: visible;
+}
+.grid_Rnav ul {
+	_overflow: visible;
+	_height: 1%;
+}
+.grid_Rnav ul a {
+	_text-decoration: none!important;
+}
+.printBtn, .printBtn:visited {
+	_background: none;
+ filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='img/btn/print-off.png')!important;
+}
+.shareBtn, .shareBtn:visited {
+	_background: none;
+ filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='img/btn/share-off.png')!important;
+}
+ul.btn {
+	_overflow: visible;
+}
+.orderIBtn, .orderIBtn:visited {
+	_background: none;
+ filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='img/btn/orderI-off.png')!important;
+}
+.orderIBtn:hover {
+	_background: none;
+ filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='img/btn/orderI-on.png')!important;
+}
+.checkOutBtn, .checkOutBtn:visited {
+	_background: none;
+ filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='img/btn/checkOut-off.png')!important;
+}
+.checkOutBtn:hover {
+	_background: none;
+ filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='img/btn/checkOut-on.png')!important;
+}
+.viewCartBtn, .viewCartBtn:visited {
+	_background: none;
+ filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='img/btn/viewCart-off.png')!important;
+}
+.viewCartBtn:hover {
+	_background: none;
+ filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='img/btn/viewCart-on.png')!important;
+}
+.addCartBtn, .addCartBtn:visited {
+	_background: none;
+ filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='img/btn/addCart-off.png')!important;
+}
+.addCartBtn:hover {
+	_background: none;
+ filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='img/btn/addCart-on.png')!important;
+}
+#menuEnvelope {
+  _background: URL("../img/menu/menu.jpg")/*tpa=http://www.lean.org/img/menu/menu.jpg*/ no-repeat top center;
+}
+.presentBox {
+	_oveflow: visible;
+	_height: 1%;
+	zoom: 0;
+	_float: left;
+	margin: 0;
+	padding: 0;
+	_width: 708px;
+}
+.Box {
+	_overflow: visible;
+	_height: 1%;
+ _float: right:
+ zoom: 0;
+	margin: 0px!important;
+	padding: 0px!important;
+	_width:710px;
+}
+.grid_Scolumn2 {
+	_overflow: visible;
+}
+.grid_Scolumn3 {
+	_overflow: visible;
+ _height: %1;
+	zoom: 0;
+}
+#pageNav {
+	_overflow: visible;
+	_clear: both;
+	_height: 1%;
+}
+ul.rnavBodyEdu li {
+	_float: left;
+	_clear: both;
+	_width: 170px;
+}
+ul.rnavBodyEdu {
+	_height: 260px;
+}
+
+.a-vTab1, .a-vTab2, .a-vTab3, .a-vTab4 {
+	_height: 103px;
+}
+.a-vTab5  {
+	_height: 51px;
+}

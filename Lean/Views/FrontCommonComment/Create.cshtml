@@ -1,0 +1,22 @@
+﻿@model CommonComment
+@{
+    ViewBag.Title = "Index";
+    
+}
+
+<div>
+    @if (Model != null)
+    {
+        <div>
+            @if (Model.DiscussType == (int)DiscussTypeEnum.Edit)
+            {
+                @Html.Raw(Model.DiscussContent)
+            }
+            else
+            {
+                <embed width="100%" height="700px" name="plugin" src="@(ConfigHelper.ConvertSwfPath + Model.DiscussFileUrl)" type="application/x-shockwave-flash" />
+            }
+        </div>
+    }
+    <div class="panel-footer"></div>
+</div>

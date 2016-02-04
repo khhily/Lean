@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="5320d3b88fd14c1e98d43d31feaada9e" Name="Diagram1">
+        <EntityTypeShape EntityType="LeanModel.BaseModule" Width="1.5" PointX="0.75" PointY="3.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="LeanModel.Comment" Width="1.5" PointX="8.25" PointY="11.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="LeanModel.CommonComment" Width="1.5" PointX="5.25" PointY="11" IsExpanded="true" />
+        <EntityTypeShape EntityType="LeanModel.ManagerComment" Width="1.5" PointX="5.875" PointY="15" IsExpanded="true" />
+        <EntityTypeShape EntityType="LeanModel.UserInfo" Width="1.5" PointX="3" PointY="11.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="LeanModel.UserRight" Width="1.5" PointX="8.25" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="LeanModel.UserRole" Width="1.5" PointX="0.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="LeanModel.UserRoleRight" Width="1.5" PointX="3" PointY="8" IsExpanded="true" />
+        <AssociationConnector Association="LeanModel.FK__UserRight__Modul__3A81B327" ManuallyRouted="false" />
+        <AssociationConnector Association="LeanModel.FK__UserRoleR__Modul__32E0915F" ManuallyRouted="false" />
+        <AssociationConnector Association="LeanModel.FK__Comment__RoleID__440B1D61" ManuallyRouted="false" />
+        <AssociationConnector Association="LeanModel.FK__Comment__UserID__4222D4EF" ManuallyRouted="false" />
+        <AssociationConnector Association="LeanModel.FK__CommonCom__Discu__571DF1D5" ManuallyRouted="false" />
+        <AssociationConnector Association="LeanModel.FK__ManagerCo__UserI__4BAC3F29" ManuallyRouted="false" />
+        <AssociationConnector Association="LeanModel.FK__UserInfo__RoleID__1BFD2C07" ManuallyRouted="false" />
+        <AssociationConnector Association="LeanModel.FK__UserRight__UserI__398D8EEE" ManuallyRouted="false" />
+        <AssociationConnector Association="LeanModel.FK__UserRoleR__RoleI__31EC6D26" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="LeanModel.LenLevel" Width="1.5" PointX="5.875" PointY="1" />
+        <EntityTypeShape EntityType="LeanModel.sysdiagrams" Width="1.5" PointX="3.375" PointY="4.75" />
+        <AssociationConnector Association="LeanModel.FK__UserInfo__LevelI__2645B050" />
+        <EntityTypeShape EntityType="LeanModel.CreateModel" Width="1.5" PointX="0.75" PointY="0.75" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

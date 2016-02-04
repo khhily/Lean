@@ -1,0 +1,175 @@
+﻿@functions{
+
+    public static System.Web.Routing.RouteValueDictionary MargeClass(dynamic viewBag, bool flag = true)
+    {
+        System.Web.Routing.RouteValueDictionary htmlAttributes = viewBag.HtmlAttributes ?? new System.Web.Routing.RouteValueDictionary();
+
+        if (htmlAttributes["class"] != null)
+        {
+            htmlAttributes["class"] = string.Format("{0} {1}", htmlAttributes["style"], "form-control input-sm");
+        }
+        else
+        {
+            htmlAttributes.Add("class", "form-control input-sm");
+        }
+        string inputWidth = viewBag.InputWidth ?? "";
+        if (!string.IsNullOrEmpty(inputWidth) && !inputWidth.Trim().EndsWith(";"))
+        {
+            inputWidth += ";";
+        }
+        inputWidth = string.Format("width:{0}", inputWidth);
+        if (flag)
+        {
+            if (htmlAttributes.ContainsKey("style"))
+            {
+                if (!htmlAttributes["style"].ToString().Trim().EndsWith(";"))
+                {
+                    htmlAttributes["style"] += ";";
+                }
+                var styles = htmlAttributes["style"].ToString();
+                System.Text.RegularExpressions.Regex reg = new System.Text.RegularExpressions.Regex(@"(:\s+)|(\s+:)|(\s+:\s+)");
+                styles = reg.Replace(styles, ":");
+                reg = new System.Text.RegularExpressions.Regex(@"(;\s+)|(\s+;)|(\s+;\s+)");
+                styles = reg.Replace(styles, ";");
+
+                if (!htmlAttributes.Any(q => (";" + q.Value.ToString()).Contains(";width:")))
+                {
+                    if (!htmlAttributes.Values.ToString().Trim().EndsWith(";"))
+                    {
+                        htmlAttributes["style"] += ";";
+                    }
+                    htmlAttributes["style"] += inputWidth;
+                }
+                else
+                {
+                    styles = ";" + htmlAttributes["style"].ToString();
+                    var widthStyle = styles.Substring(styles.IndexOf(";width:") + 1, styles.IndexOf(";", styles.IndexOf(";width:") + 1) - styles.IndexOf(";width:"));
+                    styles = styles.Replace(widthStyle, "");
+                    styles += inputWidth;
+                    htmlAttributes["style"] = styles.Substring(1);
+                }
+            }
+            else
+            {
+                htmlAttributes.Add("style", inputWidth);
+            }
+        }
+
+        return htmlAttributes;
+    }
+
+
+    public static void MargeClass(dynamic viewBag, System.Web.Routing.RouteValueDictionary attrs)
+    {
+        System.Web.Routing.RouteValueDictionary htmlAttributes = viewBag.HtmlAttributes ?? new System.Web.Routing.RouteValueDictionary();
+
+        if (htmlAttributes["class"] != null)
+        {
+            attrs["class"] = string.Format("{0} {1}", htmlAttributes["class"], "form-control input-sm col-lg-2 col-md-2 col-xs-2");
+        }
+        else
+        {
+            attrs.Add("class", "form-control input-sm");
+        }
+
+        foreach (var kv in htmlAttributes)
+        {
+            if (!attrs.ContainsKey(kv.Key))
+            {
+                attrs.Add(kv.Key, kv.Value);
+            }
+        }
+    }
+
+}
+@helper Star(dynamic viewBag)
+{
+    if (viewBag.IsRequired)
+    {
+        <span class="red">*</span>
+    }
+}
+
+@helper Label(dynamic viewBag)
+{
+    string displayName = viewBag.DisplayName;
+    bool withLabel = viewBag.WithLabel ?? true;
+
+    if (withLabel)
+    {
+        <span class="help-block">@displayName @Star(viewBag)</span>
+    }
+}
+
+@helper HorizontalLabel(dynamic viewBag)
+{
+    string displayName = viewBag.DisplayName;
+    string labelWidth = viewBag.LabelWidth;
+    string lineHeight = viewBag.LineHeight;
+    bool withLabel = viewBag.Withlabel ?? true;
+
+    if (!string.IsNullOrEmpty(labelWidth) && labelWidth.Trim().EndsWith(";"))
+    {
+        labelWidth = labelWidth.Trim().Substring(0, labelWidth.Trim().Length - 1);
+    }
+    if (string.IsNullOrEmpty(labelWidth))
+    {
+        labelWidth = "auto";
+    }
+    
+    if (!string.IsNullOrEmpty(lineHeight))
+    {
+        lineHeight = string.Format("line-height: {0};", lineHeight);
+    }
+    else
+    {
+        lineHeight = "";
+    }
+    
+    if (withLabel)
+    {
+        <div style="float:left; width:@(labelWidth); @(lineHeight)">
+            <span>@displayName</span>
+        </div>
+    }
+}
+
+@helper CreateHtmlObject(dynamic viewBag, System.Web.Mvc.MvcHtmlString objectString) {
+    string labelWidth = viewBag.LabelWidth ?? "";
+    if (string.IsNullOrEmpty(labelWidth))
+    {
+        labelWidth = "auto";
+    }
+    <div style="float:none; padding-left:@(labelWidth);">
+        @(objectString)
+    </div>
+}
+
+@helper SelectorBtn(dynamic viewBag, string selector, string prefix = "")
+{
+    string propertyExpression = viewBag.PropertyName;
+    if (!string.IsNullOrWhiteSpace(prefix))
+    {
+        propertyExpression = string.Format("{0}.{1}", prefix, propertyExpression);
+    }
+
+    <span class="input-group-btn">
+        <button type="button" class="btn btn-default input-sm" data-xxy-selector="@selector" data-xxy-selector-for="@propertyExpression">
+            <span class="glyphicon glyphicon-folder-open"></span>
+        </button>
+    </span>
+
+}
+
+@helper SearchBtnBlock(string className = "col-xs-2")
+{
+    <div class="@className">
+        @*<span class="help-block">&nbsp;</span>*@
+        <input type="submit" class="btn btn-sm btn-primary" id="btn_Search" value="查询" />
+    </div>
+}
+
+@helper ReturnToListBtn(System.Web.Mvc.UrlHelper url, string className = "")
+{
+    <input type="button" onclick="IndexPageHelper.GoToIndex('@url.Action("Index")')" class="btn btn-default" value="返回列表" />
+}

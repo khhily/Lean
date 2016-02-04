@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WGX.Common", "WGX.Common\WGX.Common.csproj", "{30E15AF7-0C1D-4DC6-8C48-706ACD91D20E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WGX.Test", "..\..\Test\WGX.Test\WGX.Test.csproj", "{4559CDC0-8F56-43C7-9999-5F7905C5921D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WGX.MVC.Test", "..\..\WGX.MVC.Test\WGX.MVC.Test.csproj", "{3FDA7CED-92D7-40FD-9609-99D7D635E39A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{30E15AF7-0C1D-4DC6-8C48-706ACD91D20E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30E15AF7-0C1D-4DC6-8C48-706ACD91D20E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30E15AF7-0C1D-4DC6-8C48-706ACD91D20E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30E15AF7-0C1D-4DC6-8C48-706ACD91D20E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4559CDC0-8F56-43C7-9999-5F7905C5921D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4559CDC0-8F56-43C7-9999-5F7905C5921D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4559CDC0-8F56-43C7-9999-5F7905C5921D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4559CDC0-8F56-43C7-9999-5F7905C5921D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FDA7CED-92D7-40FD-9609-99D7D635E39A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FDA7CED-92D7-40FD-9609-99D7D635E39A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FDA7CED-92D7-40FD-9609-99D7D635E39A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FDA7CED-92D7-40FD-9609-99D7D635E39A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

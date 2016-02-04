@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - 我的 ASP.NET 应用程序</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link rel="stylesheet" type="text/css" href="~/Content/styles.css" />
+    <link type="text/css" href="~/Content/ui-lightness/jquery-ui-1.8.16.custom.css" rel="stylesheet" />
+    @{
+        var datas = PageDatas.GetInstance();
+        var area = ViewContext.RouteData.DataTokens["area"];
+        
+        var menus = datas.GetModules(area);
+        if (area == null)
+        {
+            menus = menus.Where(q => !q.IsBack).ToList();
+        }
+        else
+        {
+            menus = menus.Where(q => q.IsBack).ToList();
+        }
+        var showMenus = menus.Where(q => q.IsMenu && q.ParentID == 0 && q.Valid);
+        var currentMenu = TempData["CurrentMenu"] as BaseModule;
+        var currentUser = datas.CurrentUserBiz.CurrentUser;
+        string msg = TempData["ShowMessage"]== null ? "" : TempData["ShowMessage"].ToString();
+        
+    }
+    @RenderSection("styles", required: false)
+</head>
+
+<body>
+    <div id="page">
+        <div id="header_home">
+            <div id="headerInside">
+                <div class="logo">
+                    <a href="@Url.Action("Index", "Home", new { area = "" })" title="Home">
+                        <img src="~/Content/images/logo.png" width="308" height="92" alt="Lean Enterprise Institute" title="Lean Enterprise Institute" />
+                        <img src="~/Content/images/pre_logo.png" height="92" />
+                    </a>
+                </div>
+                <div class="rightHeaderBox">
+                    <div class="grid_head1">
+                        <ul id="login_ul" class="utility-nav" style="@(currentUser ==null ? "" : "display:none;")">
+                            @using (Html.BeginForm("Login", "User", FormMethod.Post, new { id = "LoginForm" }))
+                            { 
+                                <li class="title">User Name:</li>
+                                <li class="input"><input name="UserCode" value="" type="text" id="UserCode" /></li>
+                                <li class="title">Password:</li>
+                                <li class="input"><input type="password" value="" name="Password" id="Password" /></li>
+                                <li class="button"><div class="btn-group btn-group-xs"><button class="btn btn-link" type="button" value="Login" id="btnLogin">Login</button></div></li>
+                            }
+                        </ul>
+                        <ul id="user_ul" class="utility-nav" style="@(currentUser == null ? "display:none;" : "")">
+                            @if (currentUser != null)
+                            {
+                                <li class="username_show">Hello, <a href="@Url.Action("UserCenter", "Home", new { area = "", id = currentUser.ID })">@(currentUser.UserName)</a></li>
+                                @*<li class="changepwd_show"></li>*@
+                                if (currentUser.IsAdmin)
+                                {
+                                    if (area == null) { 
+                                        <li class="linkback"><div class="btn-group btn-group-xs"><a class="btn btn-link" href="@Url.Action("Index", "ManageHome", new { area = "LeanManage" })"><span>Back Manage</span></a></div></li>
+                                    }
+                                    else
+                                    {
+                                        <li class="linkback"><div class="btn-group btn-group-xs"><a class="btn btn-link" href="@Url.Action("Index", "Home", new { area = "" })"><span>To Front</span></a></div></li>
+                                    }
+                                    
+                                    <li class="linkback"><div class="btn-group btn-group-xs"><button class="btn btn-link" id="ChangeRegCode"><span>Change Registry Code</span></button></div></li>
+                                }
+                                <li class="logout"><div class="btn-group btn-group-xs"><button class="btn btn-link" type="button" id="btnLogout" value="Logout"><span class="last-item">Logout</span></button></div></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="menuEnvelope">
+                <div id="menu">
+                    @foreach (var menu in showMenus)
+                    {
+                        <div class="menu_push">
+                            @if (currentMenu != null && menu.ModuleCode.ToUpper() == currentMenu.ModuleCode.ToUpper())
+                            {
+                                <span>@(menu.ModuleName)</span>
+                            }
+                            else
+                            {
+                                <a href="@(menu.ModuleUrl)">@(menu.ModuleName)</a>
+                            }
+                            @{
+                                var subMenus = menus.Where(q => q.ParentID == menu.ID && q.IsMenu && q.Valid);
+                            }
+                            @if (subMenus.Any())
+                            {
+                                <div style="position: relative; width: 100%;">
+                                    <div class="menu_submenu" style="position: absolute; width: 100%;">
+                                        @foreach (var sub in subMenus)
+                                        {
+                                            <a class="submenu_a" href="@(sub.ModuleUrl)">@(sub.ModuleName)</a>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    @if(showMenus.Count() == 0)
+                    { 
+                    <div class="menu_push"><span>Home</span></div>
+                    <div class="menu_push">
+                        <a href="WhoWeAre/index.htm" >111</a>
+                        <div style="position:relative;">
+                            <div class="menu_submenu" style="position:absolute;">
+                                <a class="submenu_a" href="#">submenu1</a>
+                                <a class="submenu_a" href="#">submenu2</a>
+                                <a class="submenu_a" href="#">submenu3</a>
+                                <a class="submenu_a" href="#">submenu4</a>
+                                <a class="submenu_a" href="#">submenu5</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu_push"><a href="#" >222</a></div>
+                    <div class="menu_push">
+                        <a href="#" >333</a>
+                        <div style="position:relative;">
+                            <div class="menu_submenu" style="position:absolute;">
+                                <a class="submenu_a" href="#">submenu1</a>
+                                <a class="submenu_a" href="#">submenu2</a>
+                                <a class="submenu_a" href="#">submenu3</a>
+                                <a class="submenu_a" href="#">submenu4</a>
+                                <a class="submenu_a" href="#">submenu5</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu_push"><a href="#" >444</a></div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="container body-content">
+            @RenderBody()
+        </div>
+        <div class="container body-footer">
+
+        </div>
+    </div>
+    
+    @Scripts.Render("~/bundles/common")
+    @if (!string.IsNullOrWhiteSpace(msg))
+    {
+        <script>
+            alert("@msg");
+        </script>
+    }
+    @RenderSection("scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,51 @@
+﻿@model UserInfo
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_SubPageLayout.cshtml";
+    var datas = PageDatas.GetInstance();
+    var roleList = datas.GetUserRoles(false);
+    var genderList = datas.GetEnumList(typeof (UserGenderEnum));
+    var typeList = datas.GetUserTypes(true);
+    var statusList = datas.GetEnumList(typeof (StatusEnum));
+    var levelList = datas.GetLenLevels();
+}
+
+@using (Html.BeginForm())
+{
+    <div class="container">
+        <div class="row">
+            @Html.HiddenFor(m => m.ID)
+            @Html.TextBlockFor(m => m.UserCode, "col-xs-4")
+            @Html.TextBlockFor(m => m.UserName, "col-xs-4")
+            @Html.PasswordBlockFor(m => m.Password, "col-xs-4")
+            @Html.DropDownBlockFor(m => m.RoleID, roleList, "col-xs-4")
+            @Html.TextBlockFor(m => m.Age, "col-xs-4")
+            @Html.DropDownBlockFor(m => m.UserGender, genderList,"col-xs-4")
+            @Html.DropDownBlockFor(m => m.LevelID, levelList, "col-xs-4")
+            @Html.CheckBoxBlockFor(m => m.IsAdmin, "col-xs-4")
+            @Html.DropDownBlockFor(m => m.UserType, typeList, "col-xs-4")
+            @Html.DropDownBlockFor(m => m.Status, statusList, "col-xs-4")
+            @Html.TextBlockFor(m => m.Email, "col-xs-4")
+            @Html.TextBlockFor(m => m.Telephone, "col-xs-4")
+            @Html.TextBlockFor(m => m.QQ, "col-xs-4")
+        </div>
+        <div class="panel-footer center">
+            <div class="btn-group btn-group-sm">
+                <input type="submit" id="btn_Save" value="保存" class="btn btn-primary"/>
+                <input type="button" value="关闭" class="btn btn-default" id="btn_Close"/>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts
+{
+    <script>
+        $(function() {
+            $("#btn_Close").click(function() {
+                WGX.ColorBox.Close();
+            });
+
+        });
+    </script>
+}

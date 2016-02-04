@@ -1,0 +1,63 @@
+﻿@model ManagerComment
+@{
+    ViewBag.Title = "Create";
+    var content = Model != null ? Model.Content : "";
+}
+@Styles.Render("~/Content/ueditor/themes/iframe.css")
+@using (Html.BeginForm())
+{
+    <div class="container">
+        <div class="row">
+            <textarea id="mainContent" type="text/plain" style="width: 100%; height: 500px;"></textarea>
+        </div>
+        <div class="panel-footer center">
+            <div class="btn-group btn-group-sm">
+                <button class="btn btn-primary" id="btnSave" value="Save" type="button"><span>保存</span></button>
+                @SharedTemplatesHelper.ReturnToListBtn(Url);
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts{
+    <script src="~/Content/ueditor/ueditor.config.js"></script>
+    <script src="~/Content/ueditor/ueditor.all.js"></script>
+    <script src="~/Content/ueditor/lang/zh-cn/zh-cn.js"></script>
+    <script>
+        $(function(){
+            ManagerCommentCreatePage = window.ManagerCommentCreatePage || {};
+            (function (_) {
+                _.PageLoad = function () {
+                    mainUE = UE.getEditor('mainContent', {
+                        toolbars: [[
+                        'fullscreen', 'source', '|', 'undo', 'redo', '|',
+                        'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+                        'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
+                        'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
+                        'directionalityltr', 'directionalityrtl', 'indent', '|',
+                        'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
+                        'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
+                        'simpleupload', 'insertimage', 'emotion', 'scrawl', 'insertvideo', 'music', 'attachment', 'map', 'gmap', 'insertframe', 'insertcode', 'webapp', 'pagebreak', 'template', 'background', '|',
+                        'horizontal', 'date', 'time', 'spechars', 'snapscreen', 'wordimage', '|',
+                        'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts', '|',
+                        'preview', 'searchreplace', 'help'
+                        ]]
+                    });
+                    mainUE.ready(function () {
+                        mainUE.setContent('@Html.Raw(content)');
+                    });
+
+                    $("#btnSave").click(function () {
+                        var mainContent = mainUE.getContent();
+                        if (mainContent.length <= 0) {
+                            alert("内容不能为空!");
+                        }
+                        $("#Content").remove();
+                        $("form").append("<input type='hidden' name='Content' id='Content' value='" + mainContent + "' />")
+                            .submit();
+                    });
+                }();
+            })(ManagerCommentCreatePage);
+        });
+    </script>
+}

@@ -1,0 +1,48 @@
+﻿@model UserRole
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_SubPageLayout.cshtml";
+    var datas = PageDatas.GetInstance();
+    var statusList = datas.GetEnumList(typeof (StatusEnum));
+    //var menuList = datas.GetModulesSelectList(true);
+    var roleList = datas.GetUserRoles(); //datas.GetUserRoleSelectList();
+}
+<style type="text/css">
+    .WGX .container {
+        width: 300px;
+        margin: 0 auto;
+    }
+</style>
+@using (Html.BeginForm())
+{
+    <div class="container">
+        <div class="row">
+            @Html.HiddenFor(m => m.ID)
+            @Html.TextBlockFor(m => m.RoleName, "col-xs-12")
+            @Html.DropDownBlockFor(m => m.ParentID, roleList, "col-xs-12")
+            @Html.DropDownBlockFor(m => m.Status, statusList, "col-xs-12")
+        </div>
+        <div>
+            @Html.ValidationSummary()
+        </div>
+        
+        <div class="row">
+            <div class="panel-footer center">
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-primary" type="submit" value="Save">保存</button>
+                    <button class="btn btn-default" type="button" value="ReturnToList" id="btnReturnList">返回</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts{
+    <script>
+        $(function() {
+            $("#btnReturnList").click(function () {
+                WGX.ColorBox.Close();
+            });
+        });
+    </script>
+}

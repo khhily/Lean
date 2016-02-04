@@ -1,0 +1,117 @@
+﻿@model PDM<IEnumerable<ManagerComment>, ManagerCommentCondition>
+@{
+    ViewBag.Title = "Index";
+}
+
+@using(Html.BeginForm())
+{
+    <div class="panel panel-info">
+        <div class="panel-heading clearfix">
+            @Html.DoubleTimeSelectorFor(q => q.Condition.PublishDate, q => q.Condition.StartDate, q => q.Condition.EndDate, "col-xs-5")
+            @SharedTemplatesHelper.SearchBtnBlock("col-xs-2 btn-sm")
+        </div>
+        <div class="panel-body">
+            <div class="btn-group btn-group-xs" style="margin-bottom: 15px;">
+                <button type="button" class="btn btn-link color-add" value="Add" id="btnAdd"><span>发表新发言</span></button>
+            </div>
+            <table class="table show_table">
+                <thead>
+                    <tr>
+                        <td>序号</td>
+                        <td>发表时间</td>
+                        <td>发表人</td>
+                        <td>最后修改时间</td>
+                        <td>修改人</td>
+                        <td>功能</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Data != null)
+                    {
+                        int index = 1;
+                        foreach (var item in Model.Data)
+                        {
+                            <tr>
+                                <td>@(index)</td>
+                                <td>
+                                    @{
+                                        var createDate = item.CreateDate.ToString("yyyy-MM-dd HH:mm:ss");
+                                    }
+                                    @(createDate)
+                                </td>
+                                <td>
+                                    @{
+                                        var createUser = item.CreateUser != null ? item.CreateUser.UserName : "";
+                                    }
+                                    @(createUser)
+                                </td>
+                                <td>
+                                    @{
+                                        var modifyDate = item.ModifyDate.ToString("yyyy-MM-dd HH:mm:ss");
+                                    }
+                                    @(modifyDate)
+                                </td>
+                                <td>
+                                    @{
+                                        var modifyUser = item.ModifyUser != null ? item.ModifyUser.UserName : "";
+                                    }
+                                    @(modifyUser)
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-xs">
+                                        <button type="button" class="btn btn-default" value="Edit" onclick="ManagerCommentIndexPage.EditComment(@item.ID)"><span class="glyphicon glyphicon-pencil"></span></button>
+                                        <button type="button" class="btn btn-default" value="Delete", onclick="ManagerCommentIndexPage.Delete(@item.ID)"><span class="glyphicon glyphicon-trash"></span></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            index++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="panel-footer">
+            @if (Model != null && Model.Condition != null)
+            {
+                @Html.Pager(m => m.Condition.Pager)
+            }
+        </div>
+    </div>
+}
+
+@section scripts{
+    <script>
+        $(function () {
+            ManagerCommentIndexPage = window.ManagerCommentIndexPage || {};
+            (function (_) {
+                _.PageLoad = function () {
+                    $("#btnAdd").click(function () {
+                        window.location.href = '@Url.Action("Create")';
+                    });
+                }();
+
+                _.EditComment = function (id) {
+                    window.location.href = '@Url.Action("Edit")/' + id;
+                }
+
+                _.Delete = function(id) {
+                    WGX.ColorBox.Confirm("", "warn", "提示", "确定要删除该条发言?", function(){
+                        $.ajax({
+                            url: '@Url.Action("Delete")',
+                            data: 'id=' + id,
+                            dataType: 'json',
+                            type: 'post',
+                            success: function (data) {
+                                if (data.success) {
+                                    $("#btn_Search").click();
+                                } else {
+                                    alert(data.message);
+                                }
+                            }
+                        });
+                    });
+                }
+            })(ManagerCommentIndexPage);
+        })
+    </script>
+}

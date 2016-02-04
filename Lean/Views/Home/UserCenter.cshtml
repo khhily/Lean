@@ -1,0 +1,62 @@
+﻿@model UserInfo
+@{
+    ViewBag.Title = "UserCenter";
+}
+<style>
+    .user_img, .changepwd {
+        padding: 0 15px;
+    }
+</style>
+<div class="user_container">
+    <div class="left user_img">
+        <img src="@Model.ImageUrl" style="width: 400px;" />
+    </div>
+    <div class="left user_info">
+        <div class="form-group">
+            @Html.LabelFor(m => m.UserName, new { style = "width: 100px;" })
+            @Html.DisplayFor(m => m.UserName)
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Email, new { style = "width: 100px;" })
+            @Html.DisplayFor(m => m.Email)
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.UserCode, new { style = "width: 100px;" })
+            @Html.DisplayFor(m => m.UserCode)
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Age, new { style = "width: 100px;" })
+            @Html.DisplayFor(m => m.Age)
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.UserRole.RoleName, new { style = "width: 100px;" })
+            @Html.DisplayFor(m => m.UserRole.RoleName)
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Telephone, new { style = "width: 100px;" })
+            @Html.DisplayFor(m => m.Telephone)
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.LenLevel, new { style = "width: 100px;" })
+            @Html.DisplayFor(m => m.LenLevel.LevelName)
+        </div>
+    </div>
+    <div class="clearboth changepwd">
+        <div class="btn-group btn-group-xs"><button class="btn btn-link" type="button" value="ChangePassword" id="btnChangePwd"><span>Change Password</span></button></div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(function () {
+            UserCenterPageObj = window.UserCenterPageObj || {};
+            (function (_) {
+                $("#btnChangePwd").click(function () {
+                    WGX.ColorBox.AutoPage("Change Password", 500, 300, '@Url.Action("ChangePwd", "User", new { area = "" })', function () {
+                        $.colorbox.close();
+                    });
+                });
+            })(UserCenterPageObj);
+        });
+    </script>
+}

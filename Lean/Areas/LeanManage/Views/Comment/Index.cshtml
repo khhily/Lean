@@ -1,0 +1,106 @@
+﻿@model PDM<IEnumerable<Comment>, CommentCondition>
+@{
+    ViewBag.Title = "Index";
+    var datas = PageDatas.GetInstance();
+}
+
+@using (Html.BeginForm())
+{
+    <div class="panel panel-info">
+        <div class="panel-heading clearfix">
+            <span class="help-block">留言信息</span>
+            <div class="row">
+                @Html.TextBlockFor(m => m.Condition.UserName)
+                @SharedTemplatesHelper.SearchBtnBlock()
+            </div>
+        </div>
+
+        <div class="panel-body">
+            <table class="table table-hover">
+                @if (Model != null && Model.Data != null)
+                {
+                    foreach (var item in Model.Data)
+                    {
+                        <tr>
+                            <td class="msg-user">
+                                @(item.UserInfo.UserName)
+                                @(item.UserRole.RoleName)
+                            </td>
+                            <td class="msg-info">
+                                <div class="left">
+                                    @(item.CreateDate.ToString("yyyy-MM-dd HH:mm:ss"))
+                                </div>
+                                <div class="right">
+                                    <div class="btn-group btn-group-xs">
+                                        <a href="@item.ID" class="btn btn-link"><span class="glyphicon glyphicon-trash"></span></a>
+                                    </div>
+                                </div>
+                                <div style="float:none; padding-top: 40px; min-height: 100px;">
+                                    @(item.Content)
+                                </div>
+                                
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td>没有留言记录</td></tr>
+                }
+            </table>
+            
+        </div>
+        <div class="panel-footer">
+            @if(Model != null && Model.Condition != null)
+            {
+                @Html.Pager(m => m.Condition.Pager)
+            }
+        </div>
+    </div>
+}
+
+@section styles{
+    <style>
+        table .msg-user {
+            width: 200px;
+        }
+
+        table td {
+            border: 1px solid #cccccc!important;
+        }
+    </style>
+}
+
+@section scripts{
+    <script>
+        $(function () {
+            CommentIndexPageObj = window.CommentIndexPageObj || {};
+            (function (_) {
+                _.PageLoad = function () {
+                    
+                }();
+
+                _.Delete = function (id) {
+                    WGX.ColorBox.Confirm("", "warn", "确认", "确定要删除该记录?", function () {
+                        $.ajax({
+                            url: '@Url.Action("Delete")',
+                            data: 'id=' + id,
+                            dataType: "json",
+                            type: "post",
+                            success: function (data) {
+                                if (data.success) {
+                                    $("#btn_Search").click();
+                                } else {
+                                    alert(data.message);
+                                }
+                            },
+                            error: function (error) {
+                                alert("System Error!");
+                            }
+                        });
+                    });
+                };
+            })(CommentIndexPageObj);
+        });
+    </script>
+}

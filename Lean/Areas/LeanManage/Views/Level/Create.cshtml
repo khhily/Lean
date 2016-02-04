@@ -1,0 +1,60 @@
+﻿@model LenLevel
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_SubPageLayout.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    <div class="container">
+        <div class="row">
+            @Html.HiddenFor(m => m.ID)
+            @Html.TextBlockFor(m => m.LevelName, "col-xs-12")
+        </div>
+
+        <div class="panel-footer center">
+            <div class="btn-group btn-group-sm">
+                <button class="btn btn-primary" type="button" value="Save" id="btn_Save"><span>保存</span></button>
+                <button class="btn btn-default" type="button" value="Close" id="btn_Close"><span>关闭</span></button>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts{
+    <script>
+        $(function () {
+            LevelCreatePage = window.LevelCreatePage || {};
+
+            (function (_) {
+                _.PageLoad = function () {
+                    $("#btn_Save").click(function () {
+                        var lvlName = $("#LevelName").val();
+                        if (lvlName == "") {
+                            alert("名称不能为空!");
+                            return;
+                        }
+                        $.ajax({
+                            url: $("form").attr("action"),
+                            data: $("form").serialize(),
+                            dataType: 'json',
+                            type: 'post',
+                            success: function (data) {
+                                if (data.success) {
+                                    $("#btn_Search").click();
+                                    WGX.ColorBox.Close();
+                                } else {
+                                    alert(data.message);
+                                }
+                            }
+                        });
+                    });
+
+                    $("#btn_Close").click(function () {
+                        WGX.ColorBox.Close();
+                    });
+                }();
+            })(LevelCreatePage);
+        });
+    </script>
+}

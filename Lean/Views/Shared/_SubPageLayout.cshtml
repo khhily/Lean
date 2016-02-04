@@ -1,0 +1,56 @@
+﻿@{
+    Layout = null;
+    string message = (((string)TempData["ShowMessage"]) ?? "").JsSafeString();
+    bool callBack = (bool)(TempData["CallBack"] ?? false);
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @RenderSection("styles", required: false)
+    <style>
+        .wgx .bodyContainer {
+            padding: 0 15px;
+        }
+    </style>
+</head>
+    <body>
+        <div class="wgx">
+            <div class="bodyContainer">
+                @RenderBody()
+            </div>
+        </div>
+        @RenderSection("prescripts", required: false)
+        @Scripts.Render("~/bundles/common")
+        @RenderSection("scripts", required: false)
+
+        @if (!string.IsNullOrWhiteSpace(message))
+        {
+            if (!callBack)
+            {
+                <script>
+                    alert("@message");
+                </script>
+            }
+            else
+            {
+                <script type='text/javascript'>
+                    WGX.ColorBox.Alert("tips", "提示", "@message", null, false, null, "关闭",
+                        function () {
+                            $(function () {
+                                setTimeout(function () {
+                                    WGX.ColorBox.doCallBack();
+                                }, 500);
+                            });
+                        });
+                </script>
+            }
+        }
+
+    </body>
+</html>

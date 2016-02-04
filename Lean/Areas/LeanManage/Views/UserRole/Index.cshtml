@@ -1,0 +1,238 @@
+﻿@model PDM<IEnumerable<UserRole>, UserRoleCondition>
+@{
+    ViewBag.Title = "Index";
+    var datas = PageDatas.GetInstance();
+}
+<style>
+    
+</style>
+@using (Html.BeginForm())
+{
+    <div class="panel panel-info">
+        <div class="panel-heading clearfix">
+            模块列表
+            <div class="btn-group btn-group-xs">
+                <a class="btn color-add" onclick="IndexPage.CreateRole()"><span>新增</span></a>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="module-condition">
+                <div class="row" style="padding: 0 15px;">
+                    
+                </div>
+            </div>
+            <div id="module-treetable">
+                <table id="list-table" class="show_table table">
+                    <thead>
+                        <tr>
+                            <td>角色名称</td>
+                            <td>创建时间</td>
+                            <td>修改时间</td>
+                            <td>功能</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Data != null)
+                        {
+                            foreach (var role in Model.Data)
+                            {
+                                if (role.ParentID <= 0)
+                                {
+                                    <tr data-pid="@role.ParentID" data-id="@role.ID" data-tree-level="1" data-expand="false">
+                                        <td class="treetable_icon">
+                                            <div class="left glyphicon glyphicon-chevron-right icon-border"></div>
+                                            <div class="left trchk"><input type="checkbox" class="module-checkbox checkbox checkbox-inline" /></div>
+                                            <div class="left nav-text">@role.RoleName</div>
+                                        </td>
+                                        <td>@(role.CreateDate.ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                                        <td>@(role.ModifyDate.ToString("yyyy-MM-dd HH:mm:ss"))</td>
+                                        <td>
+                                            <div class="btn-group btn-group-xs">
+                                                <a class="btn btn-default" href="javascrpit:void();" onclick="IndexPage.EditUserRole(@role.ID)"><span class="glyphicon glyphicon-pencil"></span></a>
+                                                <a class="btn btn-default" href="javascript:void(0);" onclick="IndexPage.Authorize(@role.ID)"><span>授权</span></a>
+                                                <a class="btn btn-default" href="javascript:;" onclick="IndexPage.Delete(this)"><span class="glyphicon glyphicon-trash"></span></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+@section scripts{
+    <script type="text/javascript">
+    var IndexPage = window.IndexPage || {};
+    (function (_) {
+        //展开
+        _.treeObjClick = function (node) {
+            //var pid = $(node).attr("data-pid");
+            var id = $(node).attr("data-id");
+            var treeLevel = parseInt($(node).attr("data-tree-level"));
+            var subObjs = $("tr[data-pid='" + id + "']");
+            if (subObjs.length > 0) {
+                subObjs.each(function () {
+                    $(this).show();
+                    if ($(this).attr("data-expand") == "true") {
+                        _.treeObjClick(this);
+                    }
+                });
+            } else {
+                $.ajax({
+                    url: '@Url.Action("GetSubRoles")',
+                    data: 'id=' + id,
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+                        if (data.success) {
+                            _.AddSubMenus(id, treeLevel + 1, data.data);
+                        }
+                    }
+                });
+            }
+        };
+
+        //关闭
+        _.removeSubObjs = function (id) {
+            var children = $("tr[data-pid='" + id + "']");
+            if (children.length > 0) {
+                for (var i = 0; i < children.length; i++) {
+                    var pid = $(children[i]).attr("data-id");
+                    _.removeSubObjs(pid);
+                    $(children[i]).hide();
+                }
+            }
+        };
+
+        //加载子节点
+        _.AddSubMenus = function (pid, treeLevel, datas) {
+            if (datas && datas.length > 0) {
+                var parentObj = $("tr[data-id=" + pid + "]");
+                for (var i = 0; i < datas.length; i++) {
+                    var trobj = $("<tr data-pid='" + pid + "' data-id='" + datas[i].id + "' data-tree-level='" + treeLevel + "' data-expand='false'></tr>");
+                    trobj.append("<td class='treetable_icon'><div class='left glyphicon glyphicon-chevron-right icon-border'></div><div class='left trchk'><input type='checkbox' class='module-checkbox checkbox checkbox-inline' /></div><div class='left nav-text'>" + datas[i].RoleName + "</div></td>");
+                    trobj.append("<td>" + datas[i].CreatedDate + "</td><td>" + datas[i].ModifyDate + "</td><td><div class='btn-group btn-group-xs'><a class='btn btn-default' href='javascript:void();' onclick='IndexPage.EditUserRole(" + datas[i].id + ")'><span class='glyphicon glyphicon-pencil'></span></a><a class='btn btn-default' href='javascript:void(0);' onclick='IndexPage.Authorize(" + datas[i].id + ")'><span>授权</span></a><a class='btn btn-default' href='javascript:;' onclick='IndexPage.Delete(this)'><span class='glyphicon glyphicon-trash'></span></a></div></td>");
+                    $(trobj).insertAfter($(parentObj));
+                    parentObj = trobj;
+                }
+
+                _.CalcPaddingLeft();
+                _.NavClick();
+                _.HoverChangeColor();
+                _.SelectedColor();
+            }
+        };
+
+        //计算左内间距
+        _.CalcPaddingLeft = function () {
+            $(".treetable_icon").each(function () {
+                var treeLevel = parseInt($(this).closest("tr").attr("data-tree-level"));
+                $(this).css("padding-left", (((treeLevel - 1) * 15) + 5) + "px");
+            });
+        };
+
+        //绑定单击事件
+        _.NavClick = function () {
+            $(".treetable_icon").each(function () {
+                $(this).unbind("click").click(function () {
+                    var iconObj = $(this).find(".icon-border");
+                    var parentObj = $(this).closest("tr");
+                    //展开
+                    if ($(parentObj).attr("data-expand") == "false") {
+                        $(iconObj).removeClass("glyphicon-chevron-right");
+                        $(iconObj).addClass("glyphicon-chevron-down");
+                        _.treeObjClick($(parentObj));
+                        $(parentObj).attr("data-expand", "true");
+                    } else {
+                        //关闭
+                        $(iconObj).removeClass("glyphicon-chevron-down");
+                        $(iconObj).addClass("glyphicon-chevron-right");
+                        var id = $(parentObj).attr("data-id");
+                        _.removeSubObjs(id);
+                        $(parentObj).attr("data-expand", "false");
+                    }
+                    _.InitTrColor();
+                    _.HoverChangeColor();
+                    _.SelectedColor();
+                });
+            });
+        };
+
+        _.Delete = function (obj) {
+            var id = $(obj).closest("tr").attr("data-id");
+            WGX.ColorBox.Confirm("", "warn", "提示", "确定要删除该记录吗?", function () {
+                $.ajax({
+                    url: '@Url.Action("Delete")',
+                    data: 'id=' + id,
+                    dataType: 'json',
+                    type: 'post',
+                    success: function (data) {
+                        //alert(data.message);
+                        if (data.success) {
+                            top.window.location.reload();
+                        }
+                    }
+                });
+            });
+        };
+
+
+        _.EditUserRole = function (id) {
+            WGX.ColorBox.AutoPage("Edit Role", 500, 400, "@Url.Action("Edit")/" + id, function () {
+                top.window.location.reload();
+            });
+        };
+
+        _.CreateRole = function () {
+            var id = $(".module-checkbox:checked").closest("tr").attr("data-id");
+            if (id == null || id == "") {
+                id = "0";
+            }
+            @*top.window.location.href = "@Url.Action("Create")/" + id;*@
+            WGX.ColorBox.AutoPage("Create Role", 500, 400, '@Url.Action("Create")/' + id, function () {
+                top.window.location.reload();
+            });
+        };
+
+        _.InitTrColor = function () {
+            $("#list-table tbody tr").removeClass("odd").removeClass("even");
+            $("#list-table tbody tr:visible:odd").addClass("odd");
+            $("#list-table tbody tr:visible:even").addClass("even");
+        };
+
+        _.HoverChangeColor = function () {
+            $("#list-table tbody tr").hover(
+                function () { $(this).addClass("hover") },
+                function () { $(this).removeClass("hover") }
+            );
+        };
+
+        _.SelectedColor = function () {
+            $("#list-table tbody tr").unbind("click").click(function () {
+                $(".module-checkbox").prop("checked", false);
+                $(this).find(".module-checkbox").prop("checked", true);
+            });
+        };
+        //授权
+        _.Authorize = function (id) {
+            WGX.ColorBox.AutoPage("授权", 600, 600, '@Url.Action("RoleAuthorize")/' + id, function() {
+                top.window.location.reload();
+            });
+            @*top.window.location.href = "@Url.Action("RoleAuthorize")/" + id;*@
+        };
+    })(IndexPage);
+
+
+    $(function () {
+        IndexPage.NavClick();
+        IndexPage.InitTrColor();
+        IndexPage.HoverChangeColor();
+        IndexPage.SelectedColor();
+
+        IndexPageHelper.SetHistory();
+    });
+</script>
+}

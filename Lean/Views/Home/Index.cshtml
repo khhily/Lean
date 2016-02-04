@@ -1,0 +1,70 @@
+﻿@model ManagerComment
+@{
+    ViewBag.Title = "Home Page";
+}
+<style>
+    .manager_comment {
+        min-height: 300px;
+    }
+    
+</style>
+<div class="container">
+    @* 经理发言 *@
+    <div class="manager_comment">
+        @if (Model != null)
+        {
+            @Html.Raw(Model.Content)
+        }
+    </div>
+    @*留言部分*@
+    <div class="leave_msg" style="width: 100%;padding-top: 30px;">
+        @using (Html.BeginForm("LeaveMessage", "Home", FormMethod.Post, new { id = "messageform" }))
+        {
+            <span class="help-block">Message</span>
+            <textarea name="Content" rows="5" id="Content" class="form-control" style="max-width: 1170px;"></textarea>
+            <div style="margin-top: 15px;">
+                <div class="btn-group btn-group-sm">
+                    <input type="button" id="btnLeaveMessage" value="Submit" class="btn btn-default" style="color:white; background-color: rgb(0, 83, 160);" />
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="panel-footer"></div>
+</div>
+
+@section scripts{
+    <script>
+        $(function () {
+            HomeIndexPageObject = window.HomeIndexPageObject || {};
+            (function (_) {
+                _.PageLoad = function () {
+                    $("#btnLeaveMessage").click(function () {
+                        var content = $("#Content").val();
+                        if (content == "") {
+                            alert("留言内容不能为空!");
+                            return;
+                        }
+                        $.ajax({
+                            url: '@Url.Action("LeaveMessage")',
+                            data: 'Content=' + content,
+                            dataType: "json",
+                            type: 'post',
+                            success: function (data) {
+                                if (data.success) {
+                                    window.location.href = '@Url.Action("Index", "Home")';
+                                    return;
+                                }
+                                alert(data.message);
+                            },
+                            error: function (data) {
+                                alert("System error!");
+                            }
+                        });
+                    });
+
+                }();
+            })(HomeIndexPageObject);
+        });
+    </script>
+}
